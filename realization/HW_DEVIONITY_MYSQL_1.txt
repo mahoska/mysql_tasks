@@ -1,0 +1,164 @@
+
+//cоздание БД
+CREATE DATABASE practice_db CHARACTER SET utf8 COLLATE  utf8_general_ci;
+USE practice_db;
+
+
+//В БД из предыдущего занятия создать таблицу country, в которой будут храниться данные о странах:
+// название, сокращенное название (например ua, uk, es), площадь территории, численность населения, континент, президент 
+CREATE TABLE IF NOT EXISTS country(
+    id TINYINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
+    short_name VARCHAR(5),
+    square SMALLINT UNSIGNED,
+    population INT(16) UNSIGNED,
+    continent VARCHAR(30),
+    president VARCHAR(30)
+)ENGINE = InnoDB;
+
+//Вставить в таблицу country 10 записей 
+INSERT INTO country(name,short_name,square,population,continent,president) VALUES
+('Canada','ca', 9598962, 35219000, 'America','Elizabeth II'),
+('Austria','aut',83858, 8579747, 'Europe','Alexander Van der Bellen'),
+('Bulgaria','bgr', 110910, 7202198, 'Europe','Rumen Radev'),
+('Ukraine','ua', 603549, 42414900, 'Europe','Peter Poroshenko'),
+('Denmark','dnk', 43094, 5668743, 'Europe','Маргрете II'),
+('Poland','pl', 312685, 38437239, 'Europe','Andrzej Duda'),
+('United Kingdom','uk', 244820, 65341183, 'Europe','Elizabeth II'),
+('Japan','jpn', 377835, 126960000, 'Asia','Akihito'),
+('Germany','deu', 357021, 82162000, 'Europe','Joachim Gauck'),
+('Belarus','blr', 207600, 9498400, 'Europe','Alexander Lukashenko')
+
+//Получить все записи всех полей из таблицы country. Получить список названий стран. Получить список названий стран и их президентов. 
+SELECT * FROM country;
+SELECT name FROM country;
+SELECT name, president FROM country;
+
+//Таблица country: получить страны, порядковые номера которых больше 3 и не меньше 7. 
+//Получить страны, в которых население больше 20 миллионов и порядковые номера которых меньше 7. 
+//Получить информацию о стране по конкретному названию. 
+//Получить страны Азии 
+SELECT name FROM `country` WHERE id > 3 AND id <= 7;
+SELECT name FROM `country` WHERE population > 20000000 AND id <7;
+SELECT * FROM `country` WHERE name = 'Ukraine';
+SELECT name FROM `country` WHERE continent = 'Asia';
+
+
+//Таблица country: получить страны, порядковые номера которых либо 5, либо 7, либо 2.
+// Получить страны, названия которых содержат символ n. 
+SELECT name FROM `country` WHERE id IN(5,7,2);
+SELECT name FROM `country` WHERE name LIKE('%n%');
+
+//Таблица country: получить выборку всех записей таблицы, назначив псевдонимы в виде сокращенных названий столбцов.
+// Получить список континентов без повторений. 
+SELECT name as 'nm', short_name as 'stn', square as 'sq', population as 'pop',continent as 'cnt', president as 'pr' FROM `country` ;
+SELECT DISTINCT continent FROM `country` ;
+
+//Таблица country: сгруппировать записи по названию континентов
+SELECT * FROM `country` GROUP BY `continent`;
+
+//Таблица country: получить максимальное и минимальное население по странам.
+// Получить среднее население по Европейским странам.
+// Получить общее население всех стран. 
+SELECT MIN(population), MAX(population) FROM `country`;
+SELECT AVG(population) FROM `country` GROUP BY `continent` HAVING continent='Europe';
+SELECT SUM(population) FROM `country` ;
+
+//Таблица country: получить континенты, среднее население по странам которых которых превышает 40 000 000 человек. 
+SELECT continent FROM `country` GROUP BY continent HAVING AVG(population)>40000000 ;
+
+//Таблица country: получить полную таблицу упорядоченную по названию страны. 
+//Получить полную таблицу упорядоченную по названию континентов и по названию страны. 
+SELECT * FROM `country` ORDER BY name ASC ;
+SELECT * FROM `country` ORDER BY continent DESC, name ASC; 
+
+//Получить последнюю добавленную запись из таблицы country. 
+SELECT * FROM `country` ORDER BY id DESC LIMIT 1
+
+//Таблица country: изменить количество населения в странах Европы и
+// изменить действующего президента одной из стран. 
+UPDATE country SET population=population*0.1 WHERE continent = 'Europe' ;
+UPDATE country SET president = NULL WHERE name = 'Denmark' ;
+
+//Удалить одну из записей из таблицы country 
+DELETE FROM country  WHERE name='Denmark';
+
+//Таблица country: создать новую колонку continent_id, которя имеет тип TINYINT и значения по умолчанию NULL. 
+ALTER TABLE country ADD COLUMN continent_id TINYINT DEFAULT NULL;
+
+//Таблица country: добавить индекс по полю continent_id 
+ ALTER TABLE country ADD INDEX(continent_id);
+ 
+ //Создать новую таблицу continent, в которой будут сохранены названия континентов.
+// Связать таблицу continent с таблицей country по полю continent_id при помощи внешнего ключа.
+// После этого удалить из таблицы поле, которое явно указывает название континента. 
+CREATE TABLE IF NOT EXISTS continent(
+    id TINYINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30) NOT NULL
+)ENGINE = InnoDB;
+
+INSERT INTO continent (name) VALUES ('Asia'),('Europe'),('America');
+
+ALTER TABLE `country` ADD CONSTRAINT FK_continent FOREIGN KEY (`continent_id`) REFERENCES `practice_db`.`continent`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+UPDATE  country SET continent_id = 1 WHERE continent = 'Asia';
+UPDATE  country SET continent_id = 2 WHERE continent = 'Europe';
+UPDATE  country SET continent_id = 3 WHERE continent = 'America';
+
+ALTER TABLE country DROP COLUMN continent;
+
+
+//Создать таблицу с языками language (например English, Ukrainian, ...).
+// Связать таблицу country с таблицей language, моделируя используемые языки в разных странах. 
+//Например, в Украине чаще остальных используют украинский и русский язык.
+// Таким образом необходимо получить связь многие ко многим. 
+CREATE TABLE IF NOT EXISTS language(
+    id TINYINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30) NOT NULL
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS country_language(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    country_id TINYINT NOT NULL,
+    language_id TINYINT NOT NULL,
+    constraint FK1_county_lang FOREIGN KEY ( `country_id` ) REFERENCES `country`( `id` ) ON UPDATE CASCADE ON DELETE CASCADE,
+    constraint FK2_county_lang FOREIGN KEY ( `language_id` ) REFERENCES `language`( `id` ) ON UPDATE CASCADE ON DELETE CASCADE
+)ENGINE = InnoDB;
+
+INSERT INTO language (name) VALUES ('English'), ('Ukrainian'),('Russian'),('Japanese');
+
+INSERT INTO country_language (country_id, language_id) VALUES (1,1),(2,1),(3,1),(8,4),(8,1);
+
+//Соединить таблицы country, continent для получения названий стран и названий континентов 
+SELECT country.name as 'country', continent.name as continent 
+FROM country, continent
+WHERE country.continent_id = continent.id;
+
+//Выполнить предыдущее задание при помощи JOIN 
+SELECT country.name as 'country', continent.name as continent 
+FROM country JOIN continent ON country.continent_id = continent.id;
+
+//Добавить в таблицу languages новые языки. 
+//Получить выборку тех языков, которые не используются в имеющихся в базе данных странах. Использовать оператор сравнения IS NULL 
+INSERT INTO language (name) VALUES ('Swedish'), ('Portuguese');
+
+SELECT language.name
+FROM country_language RIGHT JOIN `language` ON country_language.language_id = language.id 
+WHERE country_language.country_id IS NULL;
+
+//Добавить в таблицу country поле для премьер-министра страны и заполнить записи значениями. 
+//Вывести на экран таблицу, в которой будет представлены все президенты и все премьер-министры всех стран в одну колонку. 
+ALTER TABLE country ADD COLUMN prime_minister VARCHAR(30);
+
+UPDATE  country 
+SET prime_minister = 'Andrey Kobyakov' 
+WHERE name = 'Belarus';
+
+UPDATE  country 
+SET prime_minister = 'Ognian Gerdzhikov' 
+WHERE name = 'Bulgaria';//....
+
+SELECT president FROM `country` 
+UNION 
+SELECT `prime_minister` FROM `country` 
+
