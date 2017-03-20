@@ -1,0 +1,121 @@
+----Создание  и заполнение БД
+create database mvc_17_03 CHARACTER SET utf8 COLLATE utf8_general_ci ;
+
+create table style(
+    id tinyint unsigned not null AUTO_INCREMENT,
+    title varchar(30) not null,
+    PRIMARY KEY(id)
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+	
+	
+create table book(
+    id int unsigned not null auto_increment,
+    title varchar(100) not null,
+    price decimal(10,2) not null DEFAULT 0,
+    style_id tinyint unsigned,
+    description text,
+    status tinyint default 1,
+    primary key(id),
+    constraint FK_style FOREIGN key (style_id) REFERENCES style(id) on update cascade on delete  set null
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
+create table author(
+    id int unsigned not null auto_increment,
+    name varchar(50) not null,
+    primary key(id)
+    )Engine = INNODB default charset utf8 AUTO_INCREMENT=1;
+
+create table book_author(
+    author_id int unsigned not null,
+    book_id int unsigned not null,
+    PRIMARY key(author_id, book_id),
+    constraint fk_book foreign key(book_id) references book(id) on update cascade on delete cascade,
+    constraint fk_author foreign key(author_id) references author(id) on update cascade on delete CASCADE
+    )Engine=innodb default charset utf8;
+
+insert into style(title) VALUES
+    ('ужасы'),
+    ('детская литература'),
+    ('детективы'),
+    ('приключения'),
+    ('романы'),
+    ('учебная литература');
+
+
+
+INSERT INTO `author` (`id`, `name`) VALUES
+(7, 'Александр Сергеевич Пушкин'),
+(5, 'Владимир Васильев'),
+(8, 'Корней Чуковский'),
+(12, 'Николай Носов'),
+(2, 'Пол Андерсен'),
+(1, 'Роберт Говард'),
+(3, 'Роберт Желязны'),
+(9, 'Самуил Маршак'),
+(4, 'Сергей Лукьяненко'),
+(10, 'Софья Прокофьева'),
+(11, 'Эдуард Успенский'),
+(6, 'Эндрю Нортон');	
+	
+	
+INSERT INTO `book` ( `title`, `price`, `description`) VALUES
+( 'Дневной дозор', 170.5, 'Ночные охотники с городских улиц. Вампиры и оборотни, колдуньи и ведьмаки. Те, что живут в часы когда спускается на землю мгла. Те, что веками противостоят силам белых магов. Потому, что понимают - равновесие должно быть соблюдено... '),
+('Галактический почтовой', 180.76, 'В книгу известного американского фантаста Эндрю Нортон включены научно фантастические романы из серий произведений об экипаже межгалактического корабля ''Королева Солнца''\r\n' ),
+( 'Конан, варвар из Киммерии', 298.5, 'В этот том включены повести и новеллы о Конане-варваре из Киммерии, сражавшемся с многочисленными врагами 150 веков тому назад. Конан - самый популярный герой самого знаметого родоначальника жанра фентези Роберта Говарда '),
+('Звездная стража. Крестоносцы неба', 102.5, 'Существует древняя легенда о римском императоре, который, чтобы показать свою власть, вызвал командира верного легиона и велел ему с его людьми идти по Азии до края света. И вот тысяча человек исчезла на огромном континенте, была проглочена им навсегда. На каком–нибудь неизвестном поле битвы последняя горстка выживших выстроилась в каре, защищаясь от нападения варваров. А их орел, может быть, поколения спустя стоял, одинокий и полинявший, в палатке вождя кочевников. Но тот, кто знал этих гордых людей, их службу и традиции, мог предположить, что они продолжали идти на восток, пока хоть один оставался на ногах. В 8054 г. от рождества Христова история повторилась, как это всегда бывает. Первая Галактическая империя разваливалась. Диктаторы , императоры, объединители вырывали изпод власти Центрального Контроля свои собственные и соседние солнечные системы. Космические императоры поднимали флаги и истребляли флоты, чтобы поглощать добычу – остатки крушения империи. В это время процветали только безжалостные. Тут и там человек или группа людей тщетно пытались противостоять потоку разрушения и разобщения. И среди этих борцов, которые отказывались забыть веру в нерушимое правление Центрального Контроля, самыми заметными были остатки Звездного Патруля, вооруженного объединения, которое тысячи лет пользовалось непререкаемым авторитетом. Возможно, именно потому, что в своих рядах они больше не находили безопасности. Эти люди еще крепче держались друг друга, еще строже придерживались своего древнего кодекса этики и морали. И их упрямая верность исчезнувшим идеалам и раздражала новых правителей, и вызывала у них жалость. '),
+( 'Маша и Ойка', 100.2, 'В книгу вошли замечательные сказки, стихи, истории, художественная ценность и занимательность которых не вызывает сомнения. Чем раньше взрослые начнут приучать ребенка к книге, тем гармоничнее будет развиваться малыш'),
+( 'Доктор Айболит: Пента и морские пираты', 25.65, 'Доктор Айболит любил гулять. Каждый вечер, после работы он брал зонтик и уходил  со своими зверями куда-нибудь в лес или поле. Рядом с ним шагал Тянитолкай, впереди бежала утка Кика, сзади собака Ава и свинка Хрю-Хрю... '),
+( 'Вот какой рассеянный...\r\n', 150.5, 'Увлекательные стихи для малышей'),
+( 'Доктор Айболит: Путешествие в Страну Обезьян', 225.5, 'Жил был доктор. Он был добрый. Звали его Айболит. И была у него злая сестра, которую звали Варвара. Больше всего на свете он любил зверей. В комнате у него жили зайцы, в шкафу у него жила белка, в буфете- ворона, на диване жил колючий ёж. И со всеми ними произошли невероятные приключения...')	
+
+
+UPDATE `book` SET `status` = 0 WHERE `book`.`id` = 2;
+UPDATE `book` SET `status` = 0 WHERE `book`.`id` = 6;
+UPDATE `book` SET `style_id` = 2 WHERE `book`.`id` IN (5,6,7,8);
+
+INSERT INTO `style` ( `title`) VALUES ( 'фантастика'), ( 'фэнтези')
+
+UPDATE `book` SET `style_id` = '8' WHERE `book`.`id` IN (1,3);
+UPDATE `book` SET `style_id` = 7 WHERE `book`.`id` IN (2,4);
+
+INSERT INTO book_author (`author_id`,`book_id`) VALUES (4,1),(5,1),(6,2),(6,4),(1,3),(10,5),(8,6),(8,8),(9,7);
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+вывести
+ - книги у которых цена выше средней
+ SELECT title 
+ FROM book 
+ WHERE price > (SELECT AVG(price) FROM book);
+ 
+ - сделать один большой и бесполезный джоин всех таблиц
+ SELECT book.id as id_book, book.title, book.price, style.title, author.name as author
+FROM style JOIN (book JOIN (book_author JOIN author ON book_author.author_id = author.id) ON book.id = book_author.book_id ) ON style.id = book.style_id;
+ 
+ - вывести авторов без книг
+ SELECT name from author; 
+ 
+ - вывести список стилей для каждого автора (будут повторения авторов - кто знает как убрать - круто)
+ SELECT DISTINCT author.name, style.title 
+ FROM author  JOIN  (book_author JOIN (book JOIN style ON book.style_id = style.id) ON book_author.book_id = book.id)   ON author.id = book_author.author_id; 
+ 
+ 
+ - самый дорогой автор (взять одного где цена по его книге макс)
+SELECT author.name
+FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id
+WHERE book.price  = (SELECT MAX(price) FROM book) 
+LIMIT 1;
+ 
+ 
+ - самый дешевый
+SELECT author.name 
+FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id 
+WHERE book.price = (SELECT MIN(price) FROM book) 
+LIMIT 1;
+
+
+ - средняя цена книг в каждом стиле
+SELECT style.title, ROUND(AVG(price),2)  as avarage_price
+FROM book JOIN style ON book.style_id = style.id
+GROUP BY style.title;
+
