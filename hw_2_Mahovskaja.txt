@@ -93,7 +93,9 @@ INSERT INTO book_author (`author_id`,`book_id`) VALUES (4,1),(5,1),(6,2),(6,4),(
 FROM style JOIN (book JOIN (book_author JOIN author ON book_author.author_id = author.id) ON book.id = book_author.book_id ) ON style.id = book.style_id;
  
  - вывести авторов без книг
- SELECT name from author; 
+SELECT author.name 
+FROM author  LEFT JOIN (book_author JOIN book ON book_author.book_id = book.id) ON author.id = book_author.author_id 
+WHERE book_author.book_id IS NULL;
  
  - вывести список стилей для каждого автора (будут повторения авторов - кто знает как убрать - круто)
  SELECT DISTINCT author.name, style.title 
@@ -105,14 +107,22 @@ SELECT author.name
 FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id
 WHERE book.price  = (SELECT MAX(price) FROM book) 
 LIMIT 1;
- 
+или 
+SELECT author.name, book.price
+FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id
+ORDER BY book.price DESC
+LIMIT 1;
  
  - самый дешевый
 SELECT author.name 
 FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id 
 WHERE book.price = (SELECT MIN(price) FROM book) 
 LIMIT 1;
-
+или 
+SELECT author.name
+FROM author JOIN (book_author JOIN book ON book.id = book_author.book_id) ON author.id = book_author.author_id
+ORDER BY book.price ASC
+LIMIT 1;
 
  - средняя цена книг в каждом стиле
 SELECT style.title, ROUND(AVG(price),2)  as avarage_price
